@@ -1,0 +1,81 @@
+---
+# tasks file for ansible-role-postgres
+
+- name: Define var postgres_version_no_dots. e.g. if 9.6 >> 96
+  set_fact:
+    postgres_version_no_dots: "{{ postgres_version | regex_replace('\\.') }}"
+
+- name: Install the postgres repos
+  yum:
+    name: "{{ postgres_yum_repos_rpm }}"
+    state: present
+
+- name: Install postgres rpms
+  yum:
+    name:
+      "{{ postgres_packages }}"
+    state: present
+
+- name: Check if postgres has been initialized
+  stat:
+    path: "/var/lib/pgsql/{{ postgres_version }}/initdb.log"
+  register: postgres_initialized
+
+- name: Initialize postgres
+  command: "/usr/pgsql-{{ postgres_version }}/bin/postgresql{{ postgres_version_no_dots }}-setup initdb"
+  when: not postgres_initialized.stat.exists
+
+- name: copy pg_hba.conf so user/pass authentication works in postgres
+  template:
+    src: pg_hba.conf
+    dest: "/var/lib/pgsql/{{ postgres_version }}/data/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0777
+
+- name: Start and enable the postgres service
+  service:
+    name: "postgresql-{{ postgres_version }}"
+    state: started
+    enabled: yes
+
+- name: Install python-psycopg2 required for the ansible postgres modules
+  yum:
+    name: python-psycopg2
+    state: present
+
+- name: Create a postgres db
+  postgresql_db:
+    name: "{{ postgres_db_to_create }}"
+    encoding: UTF-8
+    template: template0
+  become: true
+  become_user: postgres
+  tags: created
+
+- name: Create a postgres user
+  postgresql_user:
+    db: "{{ postgres_db_to_create }}"
+    name: "{{ postgres_user_to_create }}"
+    password: "{{ postgress_user_password }}"
+    priv: ALL
+  become: true
+  become_user: postgres
+
+- name: Create table id_20
+    postgresql_table: 
+    name: id_20
+    db: "{{ postgres_db_to_create }}"
+    columns:
+    - id integer
+    - friend text
+    - sname text
+
+- name: Create table friend__20
+    postgresql_table:
+    name: friend_20
+    db: "{{ postgres_db_to_create }}"
+    columns:
+    - id integer
+    - item integer
+    - friend text

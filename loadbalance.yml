@@ -1,0 +1,46 @@
+-
+  name: Install test
+  hosts: loadbalance
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+    - name: allow firewall 80
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+    - name: allow firewall 443
+      firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+    - name: 'restart firewalld service'
+      service:
+        name: firewalld
+        state: reloaded
+    - name: "touch file proxy.conf"
+      file:
+        state: touch
+        path: /etc/httpd/conf.d/proxy.conf
+        owner: root
+        group: root
+        mode: '0777'
+    - name: Insert text to proxy.conf
+      blockinfile:
+        path: /etc/httpd/conf.d/proxy.conf
+        block: |
+           <proxy balancer://appset>
+                   BalancerMember http://172.16.20.101
+                   BalancerMember http://172.16.20.102
+                   ProxySet lbmethod=bytraffic
+           </proxy>
+
+           ProxyPass "/friend" "balancer://appset/"
+           ProxyPassReverse "/friend" "balancer://appset/"
+
+    - name: 'restart httpd service'
+      service:
+        name: httpd
+        state: restarted

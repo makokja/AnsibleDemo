@@ -1,0 +1,100 @@
+-
+    name: install www services
+    hosts: all
+    tasks:
+
+      - name: install needed network manager libs
+        package:
+          name:
+            - NetworkManager-glib
+            - nm-connection-editor
+            - libsemanage-python
+            - policycoreutils-python
+          state: present
+#--------------------------
+-
+    name: IP Web 1 ens33
+    hosts: www1
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens33 ip4 10.10.20.101/24
+
+      - name: setting manual
+        raw: nmcli con mod ens33 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens33 && nmcli con up ens33
+#----------------------------------------------------
+-
+    name: IP Web 1 ens34
+    hosts: www1
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens34 ip4 172.16.20.101/24
+
+      - name: setting manual
+        raw: nmcli con mod ens34 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens34 && nmcli con up ens34
+
+#-----------------------------
+-
+    name: IP Web 2 ens33
+    hosts: www2
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens33 ip4 10.10.20.102/24
+
+      - name: setting manual
+        raw: nmcli con mod ens33 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens33 && nmcli con up ens33
+
+#---------------------------------
+-
+    name: IP Web 1 ens34
+    hosts: www2
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens34 ip4 172.16.20.102/24
+
+      - name: setting manual
+        raw: nmcli con mod ens34 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens34 && nmcli con up ens34
+#----------------------------------------------------------
+
+-
+    name: IP db ens33
+    hosts: db
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens33 ip4 10.10.20.103/24
+
+      - name: setting manual
+        raw: nmcli con mod ens33 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens33 && nmcli con up ens33
+#-------------------------------------------------------------
+-
+    name: IP waf ens33
+    hosts: loadbalance
+    tasks:
+
+      - name: setting ipaddress
+        raw: nmcli con mod ens33 ip4 172.16.20.100/24
+
+      - name: setting manual
+        raw: nmcli con mod ens33 ipv4.method manual
+
+      - name: setting up eth
+        raw: nmcli con down ens33 && nmcli con up ens33
