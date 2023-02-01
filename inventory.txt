@@ -1,7 +1,7 @@
-www1 ansible_host=192.168.153.132 ansible_ssh_pass=Makok123!
-www2 ansible_host=192.168.153.133 ansible_ssh_pass=Makok123!
-loadbalance ansible_host=192.168.153.134 ansible_ssh_pass=Makok123!
-db  ansible_host=192.168.153.135 ansible_ssh_pass=Makok123!
+www1 ansible_host=192.168.153.132 ansible_ssh_pass=XXX
+www2 ansible_host=192.168.153.133 ansible_ssh_pass=XXX
+loadbalance ansible_host=192.168.153.134 ansible_ssh_pass=XXX
+db  ansible_host=192.168.153.135 ansible_ssh_pass=XXX
 
 [webserver]
 www1
